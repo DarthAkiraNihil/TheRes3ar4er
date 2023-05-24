@@ -20,7 +20,7 @@ def getRecent(amount):
     for child in response:
         urls.append(child.attrib['file_url'])
         gotPostsValue += 1
-        if gotPostsValue == amount:
+        if gotPostsValue == int(amount):
             break
     return urls
 
@@ -32,7 +32,7 @@ def getTagged(tags, amount):
     for child in response:
         urls.append(child.attrib['file_url'])
         gotPostsValue += 1
-        if gotPostsValue == amount:
+        if gotPostsValue == int(amount):
             break
     return urls
 
