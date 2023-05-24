@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import requests
 from xml.etree.ElementTree import XML, fromstring
+import time
 #from config import settings
 
 intents = discord.Intents.all()
@@ -36,6 +37,7 @@ async def addTag(ctx, tag):
 async def addTag(ctx, amount):
     print(amount)
     if ctx.author != bot.user and amount.isdigit():
+        await ctx.send('Осуществляется вывод пикч с тегами' + ', '.join(activeTags))
         apiRequestTemplate = 'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&tags='
         for tag in activeTags:
             apiRequestTemplate += (tag + '+')
@@ -43,11 +45,18 @@ async def addTag(ctx, amount):
         print(apiRequestTemplate)
         parsedResponse = fromstring(requests.get(apiRequestTemplate).text)
         counter = 0
-        for child in parsedResponse:
-            await ctx.send(child.attrib['file_url'])
-            counter += 1
-            if counter == int(amount):
-                break
+        if parsedResponse.attrib['count'] == '0':
+            await ctx.send('Я не нашёл постов с данными тегами. Попробуйте поменять набор')
+        else:
+            for child in parsedResponse:
+                await ctx.send(child.attrib['file_url'])
+                time.sleep(0.4)
+                counter += 1
+                if counter == int(amount):
+                    break
+            await ctx.send('Вывод закончен!')
+    else:
+        await ctx.send('Я вас не понял. Введите команду как $r34er-view-tagged <Количество постов на вывод>')
 
 @bot.command(name='view-tags')
 async def addTag(ctx):
