@@ -1,16 +1,12 @@
 import discord
-import requests
 import time
 import logging
 import rule34api
 import config
 
 from discord.ext import commands
-from xml.etree.ElementTree import fromstring
 
-# intents = discord.Intents.all()
-
-bot = commands.Bot(command_prefix='$r34er-', intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=config.config['prefix'], intents=discord.Intents.all())
 
 activeTags = []
 
@@ -27,7 +23,7 @@ async def test(ctx):
         posts = rule34api.getTagged(['yuri'], 10)
         for post in posts:
             await ctx.send(post)
-            time.sleep(1)
+            time.sleep(config.config['delay'])
         await ctx.send('Вывод закончен!')
 
 
@@ -41,8 +37,8 @@ async def addTag(ctx, tag):
 
 
 @bot.command(name='view-tagged')
-async def addTag(ctx, amount):
-    print(amount)
+async def viewTagged(ctx, amount):
+    # print(amount)
     if ctx.author != bot.user:
         logging.info('Requested \"view-tagged\" command [arg: %s]' % amount)
         logging.info('Active tags: ' + ', '.join(activeTags))
@@ -51,7 +47,7 @@ async def addTag(ctx, amount):
             posts = rule34api.getTagged(activeTags, int(amount))
             for post in posts:
                 await ctx.send(post)
-                time.sleep(1)
+                time.sleep(config.config['delay'])
             await ctx.send('Вывод закончен!')
             logging.info('Successfully executed!')
         else:
@@ -60,7 +56,7 @@ async def addTag(ctx, amount):
 
 
 @bot.command(name='view-tags')
-async def addTag(ctx):
+async def viewTags(ctx):
     # print(amount)
 
     if ctx.author != bot.user:
@@ -70,7 +66,7 @@ async def addTag(ctx):
 
 
 @bot.command(name='reset-tags')
-async def addTag(ctx):
+async def resetTags(ctx):
     if ctx.author != bot.user:
         logging.info('Requested \"reset-tags\" command')
         activeTags.clear()
@@ -86,7 +82,7 @@ async def getRecent(ctx, amount):
             recentPosts = rule34api.getRecent(int(amount))
             for recentPost in recentPosts:
                 await ctx.send(recentPost)
-                time.sleep(1)
+                time.sleep(config.config['delay'])
             await ctx.send('Вывод закончен')
             logging.info('Successfully executed!')
         else:
@@ -94,4 +90,52 @@ async def getRecent(ctx, amount):
             await ctx.send("Я вас не понял. Введите команду как $r34er-get-recent <Количество постов на вывод>")
 
 
+@bot.command(name='add-filter-tag')
+async def addTagToFilter(ctx, tag):
+    if ctx.author != bot.user:
+        logging.info('Requested \"add-filter-tag\" command')
+        activeFilter.append(tag)
+        await ctx.send(f'Тег \"{tag}\" был добавлен в фильтр')
+        logging.info('Successfully added the tag \"%s\" to the filter' % tag)
+
+
+@bot.command(name='view-filter')
+async def viewFilter(ctx):
+    # print(amount)
+
+    if ctx.author != bot.user:
+        logging.info('Requested \"view-filter\" command')
+        response = "Список фильтруемых тегов: " + " ".join(activeFilter)
+        await ctx.send(response)
+
+
+@bot.command(name='reset-filter')
+async def resetFilter(ctx):
+    # print(amount)
+
+    if ctx.author != bot.user:
+        logging.info('Requested \"reset-filter\" command')
+        activeFilter.clear()
+        await ctx.send('Фильтр был успешно сброшен')
+
+
+@bot.command(name='view-tagged-with-filter')
+async def viewTaggedWithFilter(ctx, amount):
+    # print(amount)
+    if ctx.author != bot.user:
+        logging.info('Requested \"view-tagged-with-filter\" command [arg: %s]' % amount)
+        logging.info('Active tags: ' + ', '.join(activeTags))
+        logging.info('Active filter: ' + ', '.join(activeFilter))
+        if amount.isdigit():
+            await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags)
+                           + ', исключая теги ' + ', '.join(activeFilter))
+            posts = rule34api.getTaggedWithFilter(activeTags, activeFilter, int(amount))
+            for post in posts:
+                await ctx.send(post)
+                time.sleep(config.config['delay'])
+            await ctx.send('Вывод закончен!')
+            logging.info('Successfully executed!')
+        else:
+            logging.error('User entered invalid amount value: %s' % amount)
+            await ctx.send('Я вас не понял. Введите команду как $r34er-view-tagged <Количество постов на вывод>')
 bot.run(config.config['botToken'])

@@ -36,3 +36,23 @@ def getTagged(tags, amount: int):
             break
     return urls
 
+
+def hasTags(postTags, tagFilter):
+    for tag in tagFilter:
+        if tag in postTags:
+            return True
+    return False
+
+
+def getTaggedWithFilter(tags, tagFilter, amount: int):
+    response = fromstring(requests.get(makeRequestWithTags(tags)).text)
+    urls = []
+    gotPostsValue = 0
+    for child in response:
+        if not hasTags(child.attrib['tags'], tagFilter):
+            urls.append(child.attrib['file_url'])
+            gotPostsValue += 1
+            if gotPostsValue == amount:
+                break
+    return urls
+
