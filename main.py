@@ -47,8 +47,8 @@ async def addTag(ctx, amount):
         logging.info('Requested \"view-tagged\" command [arg: %s]' % amount)
         logging.info('Active tags: ' + ', '.join(activeTags))
         if amount.isdigit():
-            await ctx.send('Осуществляется вывод пикч с тегами' + ', '.join(activeTags))
-            posts = rule34api.getTagged(activeTags, amount)
+            await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags))
+            posts = rule34api.getTagged(activeTags, int(amount))
             for post in posts:
                 await ctx.send(post)
                 time.sleep(1)
@@ -83,7 +83,7 @@ async def getRecent(ctx, amount):
         logging.info('Requested \"get-recent\" command')
         if amount.isdigit():
             await ctx.send('Вывожу недавние посты с сайта')
-            recentPosts = rule34api.getRecent(amount)
+            recentPosts = rule34api.getRecent(int(amount))
             for recentPost in recentPosts:
                 await ctx.send(recentPost)
                 time.sleep(1)
