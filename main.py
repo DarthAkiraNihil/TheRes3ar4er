@@ -186,4 +186,24 @@ async def viewTaggedPageWithFilter(ctx, amount, page):
             )
 
 
+@bot.command(name='add-tags')
+async def addTags(ctx, tagsCount, *args):
+    if ctx.author != bot.user:
+        logging.info('Requested \"add-tags\" command [arg: %s]' % str(args))
+        for i in range(int(tagsCount)):
+            activeTags.append(args[i])
+        await ctx.send(f'Теги %s были добавлены в список активных' % ', '.join(args))
+        logging.info('Successfully added the tags %s' % ', '.join(args))
+
+
+@bot.command(name='add-tags-to-filter')
+async def addTagsToFilter(ctx, tagsCount, *args):
+    if ctx.author != bot.user:
+        logging.info('Requested \"add-tags-to-filter\" command [arg: %s]' % str(args))
+        for i in range(int(tagsCount)):
+            activeFilter.append(args[i])
+        await ctx.send(f'Теги %s были добавлены в фильтр' % ', '.join(args))
+        logging.info('Successfully added the tags %s to filter' % ', '.join(args))
+
+
 bot.run(config.config['botToken'])
