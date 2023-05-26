@@ -62,6 +62,28 @@ def makeRequestWithTagsCurrentPage(tags, page: int):
     baseRequest += f'&pid={page}'
     return baseRequest
 
+
+def getTaggedCurrentPage(tags, amount: int, page: int):
+    response = fromstring(requests.get(makeRequestWithTagsCurrentPage(tags, page)).text)
+    urls = []
+    gotPostsValue = 0
+    for child in response:
+        urls.append(child.attrib['file_url'])
+        gotPostsValue += 1
+        if gotPostsValue == amount:
+            break
+    return urls
+
+
 def getTaggedWithFilterCurrentPage(tags, tagFilter, amount: int, page: int):
-    pass
+    response = fromstring(requests.get(makeRequestWithTagsCurrentPage(tags, page)).text)
+    urls = []
+    gotPostsValue = 0
+    for child in response:
+        if not hasTags(child.attrib['tags'], tagFilter):
+            urls.append(child.attrib['file_url'])
+            gotPostsValue += 1
+            if gotPostsValue == amount:
+                break
+    return urls
 

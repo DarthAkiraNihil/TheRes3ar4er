@@ -137,5 +137,53 @@ async def viewTaggedWithFilter(ctx, amount):
             logging.info('Successfully executed!')
         else:
             logging.error('User entered invalid amount value: %s' % amount)
-            await ctx.send('Я вас не понял. Введите команду как $r34er-view-tagged <Количество постов на вывод>')
+            await ctx.send('Я вас не понял. Введите команду как $r34er-view-tagged-with-filter <Количество постов на вывод>')
+
+
+@bot.command(name='view-tagged-page')
+async def viewTaggedPage(ctx, amount, page):
+    if ctx.author != bot.user:
+        logging.info('Requested \"view-tagged-page\" command [arg: %s, page^ %s]' % (amount, page))
+        logging.info('Active tags: ' + ', '.join(activeTags))
+        # logging.info('Active filter: ' + ', '.join(activeFilter))
+        if amount.isdigit() and page.isdigit():
+            await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags) + ', страница %s' % page)
+            posts = rule34api.getTaggedWithFilterCurrentPage(activeTags, activeFilter, int(amount), int(page))
+            for post in posts:
+                await ctx.send(post)
+                time.sleep(config.config['delay'])
+            await ctx.send('Вывод закончен!')
+            logging.info('Successfully executed!')
+        else:
+            logging.error('User entered invalid amount or page value: %s, %s' % (amount, page))
+            await ctx.send(
+                'Я вас не понял. Введите команду как' +
+                '$r34er-view-tagged-page <Количество постов на вывод> <Страница постов>'
+            )
+
+
+@bot.command(name='view-tagged-page-with-filter')
+async def viewTaggedPageWithFilter(ctx, amount, page):
+    # print(amount)
+    if ctx.author != bot.user:
+        logging.info('Requested \"view-tagged-with-filter\" command [arg: %s. page: %s]' % (amount, page))
+        logging.info('Active tags: ' + ', '.join(activeTags))
+        logging.info('Active filter: ' + ', '.join(activeFilter))
+        if amount.isdigit() and page.isdigit():
+            await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags)
+                           + ', исключая теги ' + ', '.join(activeFilter) + ', страница %s' % page)
+            posts = rule34api.getTaggedWithFilterCurrentPage(activeTags, activeFilter, int(amount), int(page))
+            for post in posts:
+                await ctx.send(post)
+                time.sleep(config.config['delay'])
+            await ctx.send('Вывод закончен!')
+            logging.info('Successfully executed!')
+        else:
+            logging.error('User entered invalid amount or page value: %s' % amount)
+            await ctx.send(
+                'Я вас не понял. Введите команду как' +
+                '$r34er-view-tagged-page-with-filter <Количество постов на вывод> <Страница вывода>'
+            )
+
+
 bot.run(config.config['botToken'])
