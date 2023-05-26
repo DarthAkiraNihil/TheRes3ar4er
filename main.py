@@ -12,6 +12,8 @@ activeTags = []
 
 activeFilter = []
 
+activeLimit = True
+
 logging.basicConfig(level=logging.INFO, filename='botLog.log', format="[%(asctime)s] [%(levelname)s] %(message)s")
 
 
@@ -43,13 +45,18 @@ async def viewTagged(ctx, amount):
         logging.info('Requested \"view-tagged\" command [arg: %s]' % amount)
         logging.info('Active tags: ' + ', '.join(activeTags))
         if amount.isdigit():
-            await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags))
-            posts = rule34api.getTagged(activeTags, int(amount))
-            for post in posts:
-                await ctx.send(post)
-                time.sleep(config.config['delay'])
-            await ctx.send('Вывод закончен!')
-            logging.info('Successfully executed!')
+            if int(amount) > rule34api.LIMIT_PER_REQUEST and activeLimit:
+                logging.error('Requested too many pictures')
+                await ctx.send('Извините, но я не могу вывести настолько много пикч на данный момент' +
+                               f', максимум {rule34api.LIMIT_PER_REQUEST}')
+            else:
+                await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags))
+                posts = rule34api.getTagged(activeTags, int(amount), activeLimit)
+                for post in posts:
+                    await ctx.send(post)
+                    time.sleep(config.config['delay'])
+                await ctx.send('Вывод закончен!')
+                logging.info('Successfully executed!')
         else:
             logging.error('User entered invalid amount value: %s' % amount)
             await ctx.send('Я вас не понял. Введите команду как $r34er-view-tagged <Количество постов на вывод>')
@@ -78,13 +85,18 @@ async def getRecent(ctx, amount):
     if ctx.author != bot.user:
         logging.info('Requested \"get-recent\" command')
         if amount.isdigit():
-            await ctx.send('Вывожу недавние посты с сайта')
-            recentPosts = rule34api.getRecent(int(amount))
-            for recentPost in recentPosts:
-                await ctx.send(recentPost)
-                time.sleep(config.config['delay'])
-            await ctx.send('Вывод закончен')
-            logging.info('Successfully executed!')
+            if int(amount) > rule34api.LIMIT_PER_REQUEST and activeLimit:
+                logging.error('Requested too many pictures')
+                await ctx.send('Извините, но я не могу вывести настолько много пикч на данный момент' +
+                               f', максимум {rule34api.LIMIT_PER_REQUEST}')
+            else:
+                await ctx.send('Вывожу недавние посты с сайта')
+                recentPosts = rule34api.getRecent(int(amount))
+                for recentPost in recentPosts:
+                    await ctx.send(recentPost)
+                    time.sleep(config.config['delay'])
+                await ctx.send('Вывод закончен')
+                logging.info('Successfully executed!')
         else:
             logging.error('User entered invalid amount value: %s' % amount)
             await ctx.send("Я вас не понял. Введите команду как $r34er-get-recent <Количество постов на вывод>")
@@ -127,14 +139,20 @@ async def viewTaggedWithFilter(ctx, amount):
         logging.info('Active tags: ' + ', '.join(activeTags))
         logging.info('Active filter: ' + ', '.join(activeFilter))
         if amount.isdigit():
-            await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags)
-                           + ', исключая теги ' + ', '.join(activeFilter))
-            posts = rule34api.getTaggedWithFilter(activeTags, activeFilter, int(amount))
-            for post in posts:
-                await ctx.send(post)
-                time.sleep(config.config['delay'])
-            await ctx.send('Вывод закончен!')
-            logging.info('Successfully executed!')
+            if int(amount) > rule34api.LIMIT_PER_REQUEST and activeLimit:
+                logging.error('Requested too many pictures')
+                await ctx.send('Извините, но я не могу вывести настолько много пикч на данный момент' +
+                               f', максимум {rule34api.LIMIT_PER_REQUEST}')
+            else:
+
+                await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags)
+                               + ', исключая теги ' + ', '.join(activeFilter))
+                posts = rule34api.getTaggedWithFilter(activeTags, activeFilter, int(amount))
+                for post in posts:
+                    await ctx.send(post)
+                    time.sleep(config.config['delay'])
+                await ctx.send('Вывод закончен!')
+                logging.info('Successfully executed!')
         else:
             logging.error('User entered invalid amount value: %s' % amount)
             await ctx.send('Я вас не понял. Введите команду как $r34er-view-tagged-with-filter <Количество постов на вывод>')
@@ -147,13 +165,18 @@ async def viewTaggedPage(ctx, amount, page):
         logging.info('Active tags: ' + ', '.join(activeTags))
         # logging.info('Active filter: ' + ', '.join(activeFilter))
         if amount.isdigit() and page.isdigit():
-            await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags) + ', страница %s' % page)
-            posts = rule34api.getTaggedWithFilterCurrentPage(activeTags, activeFilter, int(amount), int(page))
-            for post in posts:
-                await ctx.send(post)
-                time.sleep(config.config['delay'])
-            await ctx.send('Вывод закончен!')
-            logging.info('Successfully executed!')
+            if int(amount) > rule34api.LIMIT_PER_REQUEST and activeLimit:
+                logging.error('Requested too many pictures')
+                await ctx.send('Извините, но я не могу вывести настолько много пикч на данный момент' +
+                               f', максимум {rule34api.LIMIT_PER_REQUEST}')
+            else:
+                await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags) + ', страница %s' % page)
+                posts = rule34api.getTaggedWithFilterCurrentPage(activeTags, activeFilter, int(amount), int(page))
+                for post in posts:
+                    await ctx.send(post)
+                    time.sleep(config.config['delay'])
+                await ctx.send('Вывод закончен!')
+                logging.info('Successfully executed!')
         else:
             logging.error('User entered invalid amount or page value: %s, %s' % (amount, page))
             await ctx.send(
@@ -170,14 +193,19 @@ async def viewTaggedPageWithFilter(ctx, amount, page):
         logging.info('Active tags: ' + ', '.join(activeTags))
         logging.info('Active filter: ' + ', '.join(activeFilter))
         if amount.isdigit() and page.isdigit():
-            await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags)
-                           + ', исключая теги ' + ', '.join(activeFilter) + ', страница %s' % page)
-            posts = rule34api.getTaggedWithFilterCurrentPage(activeTags, activeFilter, int(amount), int(page))
-            for post in posts:
-                await ctx.send(post)
-                time.sleep(config.config['delay'])
-            await ctx.send('Вывод закончен!')
-            logging.info('Successfully executed!')
+            if int(amount) > rule34api.LIMIT_PER_REQUEST and activeLimit:
+                logging.error('Requested too many pictures')
+                await ctx.send('Извините, но я не могу вывести настолько много пикч на данный момент' +
+                               f', максимум {rule34api.LIMIT_PER_REQUEST}')
+            else:
+                await ctx.send('Осуществляется вывод пикч с тегами ' + ', '.join(activeTags)
+                               + ', исключая теги ' + ', '.join(activeFilter) + ', страница %s' % page)
+                posts = rule34api.getTaggedWithFilterCurrentPage(activeTags, activeFilter, int(amount), int(page))
+                for post in posts:
+                    await ctx.send(post)
+                    time.sleep(config.config['delay'])
+                await ctx.send('Вывод закончен!')
+                logging.info('Successfully executed!')
         else:
             logging.error('User entered invalid amount or page value: %s' % amount)
             await ctx.send(

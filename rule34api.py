@@ -1,20 +1,30 @@
 from xml.etree.ElementTree import fromstring
 import requests
 
+LIMIT_PER_REQUEST = 30
 
-def makeRequestWithTags(tags):
-    apiRequestTemplate = 'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&tags='
+
+def makeRequestWithTags(tags, enableLimit=False):
+    apiRequsestTemplate = str()
+    if enableLimit:
+        apiRequestTemplate = f'https://api.rule34.xxx/index.php?page=dapi&s=post' + \
+                             '&q=index&limit={LIMIT_PER_REQUEST}&tags='
+    else:
+        apiRequestTemplate = 'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&tags='
     for tag in tags:
         apiRequestTemplate += (tag + '+')
     return apiRequestTemplate
 
 
-def getBasicRequest():
-    return 'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index'
+def getBasicRequest(enabledLimit=False):
+    if enabledLimit:
+        return 'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index' + f'&limit{LIMIT_PER_REQUEST}'
+    else:
+        return 'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index'
 
 
-def getRecent(amount: int):
-    response = fromstring(requests.get(getBasicRequest()).text)
+def getRecent(amount: int, enabledLimit=False):
+    response = fromstring(requests.get(getBasicRequest(enabledLimit)).text)
     urls = []
     gotPostsValue = 0
     for child in response:
@@ -25,8 +35,8 @@ def getRecent(amount: int):
     return urls
 
 
-def getTagged(tags, amount: int):
-    response = fromstring(requests.get(makeRequestWithTags(tags)).text)
+def getTagged(tags, amount: int, enabledLimit=False):
+    response = fromstring(requests.get(makeRequestWithTags(tags, enabledLimit)).text)
     urls = []
     gotPostsValue = 0
     for child in response:
@@ -44,8 +54,8 @@ def hasTags(postTags, tagFilter):
     return False
 
 
-def getTaggedWithFilter(tags, tagFilter, amount: int):
-    response = fromstring(requests.get(makeRequestWithTags(tags)).text)
+def getTaggedWithFilter(tags, tagFilter, amount: int, enabledLimit=False):
+    response = fromstring(requests.get(makeRequestWithTags(tags, enabledLimit)).text)
     urls = []
     gotPostsValue = 0
     for child in response:
@@ -57,14 +67,14 @@ def getTaggedWithFilter(tags, tagFilter, amount: int):
     return urls
 
 
-def makeRequestWithTagsCurrentPage(tags, page: int):
-    baseRequest = makeRequestWithTags(tags)
+def makeRequestWithTagsCurrentPage(tags, page: int, enabledLimit=False):
+    baseRequest = makeRequestWithTags(tags, enabledLimit)
     baseRequest += f'&pid={page}'
     return baseRequest
 
 
-def getTaggedCurrentPage(tags, amount: int, page: int):
-    response = fromstring(requests.get(makeRequestWithTagsCurrentPage(tags, page)).text)
+def getTaggedCurrentPage(tags, amount: int, page: int, enabledLimit=False):
+    response = fromstring(requests.get(makeRequestWithTagsCurrentPage(tags, page, enabledLimit)).text)
     urls = []
     gotPostsValue = 0
     for child in response:
@@ -75,8 +85,8 @@ def getTaggedCurrentPage(tags, amount: int, page: int):
     return urls
 
 
-def getTaggedWithFilterCurrentPage(tags, tagFilter, amount: int, page: int):
-    response = fromstring(requests.get(makeRequestWithTagsCurrentPage(tags, page)).text)
+def getTaggedWithFilterCurrentPage(tags, tagFilter, amount: int, page: int, enabledLimit=False):
+    response = fromstring(requests.get(makeRequestWithTagsCurrentPage(tags, page, enabledLimit)).text)
     urls = []
     gotPostsValue = 0
     for child in response:
@@ -86,4 +96,3 @@ def getTaggedWithFilterCurrentPage(tags, tagFilter, amount: int, page: int):
             if gotPostsValue == amount:
                 break
     return urls
-
