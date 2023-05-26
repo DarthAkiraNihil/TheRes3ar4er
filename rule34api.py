@@ -56,3 +56,12 @@ def getTaggedWithFilter(tags, tagFilter, amount: int):
                 break
     return urls
 
+
+def makeRequestWithTagsCurrentPage(tags, page: int):
+    baseRequest = makeRequestWithTags(tags)
+    baseRequest += f'&pid={page}'
+    return baseRequest
+
+def getTaggedWithFilterCurrentPage(tags, tagFilter, amount: int, page: int):
+    pass
+
