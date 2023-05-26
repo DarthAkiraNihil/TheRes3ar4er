@@ -18,13 +18,29 @@ def makeRequestWithTags(tags, enableLimit=False):
 
 def getBasicRequest(enabledLimit=False):
     if enabledLimit:
-        return 'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index' + f'&limit{LIMIT_PER_REQUEST}'
+        return 'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index' + f'&limit={LIMIT_PER_REQUEST}'
     else:
         return 'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index'
 
 
+def getBasicRequestCurrentPage(page: int, enabledLimit=False):
+    return getBasicRequest(enabledLimit) + f'&pid={page}'
+
+
 def getRecent(amount: int, enabledLimit=False):
     response = fromstring(requests.get(getBasicRequest(enabledLimit)).text)
+    urls = []
+    gotPostsValue = 0
+    for child in response:
+        urls.append(child.attrib['file_url'])
+        gotPostsValue += 1
+        if gotPostsValue == amount:
+            break
+    return urls
+
+
+def getRecentCurrentPage(amount: int, page: int, enabledLimit=False):
+    response = fromstring(requests.get(getBasicRequestCurrentPage(page, enabledLimit)).text)
     urls = []
     gotPostsValue = 0
     for child in response:

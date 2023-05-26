@@ -91,7 +91,7 @@ async def getRecent(ctx, amount):
                                f', максимум {rule34api.LIMIT_PER_REQUEST}')
             else:
                 await ctx.send('Вывожу недавние посты с сайта')
-                recentPosts = rule34api.getRecent(int(amount))
+                recentPosts = rule34api.getRecent(int(amount), activeLimit)
                 for recentPost in recentPosts:
                     await ctx.send(recentPost)
                     time.sleep(config.config['delay'])
@@ -100,6 +100,29 @@ async def getRecent(ctx, amount):
         else:
             logging.error('User entered invalid amount value: %s' % amount)
             await ctx.send("Я вас не понял. Введите команду как $r34er-get-recent <Количество постов на вывод>")
+
+
+@bot.command(name='get-recent-page')
+async def getRecentCurrentPage(ctx, amount, page):
+    if ctx.author != bot.user:
+        logging.info('Requested \"get-recent\" command')
+        if amount.isdigit() and page.isdigit():
+            if int(amount) > rule34api.LIMIT_PER_REQUEST and activeLimit:
+                logging.error('Requested too many pictures')
+                await ctx.send('Извините, но я не могу вывести настолько много пикч на данный момент' +
+                               f', максимум {rule34api.LIMIT_PER_REQUEST}')
+            else:
+                await ctx.send('Вывожу недавние посты с сайта')
+                recentPosts = rule34api.getRecentCurrentPage(int(amount), int(page), activeLimit)
+                for recentPost in recentPosts:
+                    await ctx.send(recentPost)
+                    time.sleep(config.config['delay'])
+                await ctx.send('Вывод закончен')
+                logging.info('Successfully executed!')
+        else:
+            logging.error('User entered invalid amount value: %s' % amount)
+            await ctx.send("Я вас не понял. Введите команду как $r34er-get-recent-page <Количество постов на вывод>" +
+                           "<Страница вывода>")
 
 
 @bot.command(name='add-filter-tag')
