@@ -6,8 +6,6 @@ import config
 
 from discord.ext import commands, tasks
 
-
-
 activeTags = []
 
 activeFilter = []
@@ -18,10 +16,15 @@ logging.basicConfig(level=logging.INFO, filename='botLog.log', format="[%(asctim
 
 
 class TheRes3ar4er(commands.Bot):
+    test = 0
+
     @tasks.loop(seconds=10)
     async def daily_dose(self):
         # time.sleep(20)
-        # await self.wait_until_ready()
+        await self.wait_until_ready()
+        await self.change_presence(status=discord.Status.idle, activity=discord.Activity(
+            name="TEST", type=discord.ActivityType.playing))
+        self.test += 1
         print('Called')
 
     async def setup_hook(self):
