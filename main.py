@@ -4,9 +4,9 @@ import logging
 import rule34api
 import config
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 
-bot = commands.Bot(command_prefix=config.config['prefix'], intents=discord.Intents.all())
+
 
 activeTags = []
 
@@ -15,6 +15,20 @@ activeFilter = []
 activeLimit = True
 
 logging.basicConfig(level=logging.INFO, filename='botLog.log', format="[%(asctime)s] [%(levelname)s] %(message)s")
+
+
+class TheRes3ar4er(commands.Bot):
+    @tasks.loop(seconds=10)
+    async def daily_dose(self):
+        # time.sleep(20)
+        # await self.wait_until_ready()
+        print('Called')
+
+    async def setup_hook(self):
+        self.daily_dose.start()
+
+
+bot = TheRes3ar4er(command_prefix=config.config['prefix'], intents=discord.Intents.all())
 
 
 @bot.command(name='test')
@@ -178,7 +192,9 @@ async def viewTaggedWithFilter(ctx, amount):
                 logging.info('Successfully executed!')
         else:
             logging.error('User entered invalid amount value: %s' % amount)
-            await ctx.send('Я вас не понял. Введите команду как $r34er-view-tagged-with-filter <Количество постов на вывод>')
+            await ctx.send(
+                'Я вас не понял. Введите команду как $r34er-view-tagged-with-filter <Количество постов на вывод>'
+            )
 
 
 @bot.command(name='view-tagged-page')
@@ -256,5 +272,5 @@ async def addTagsToFilter(ctx, tagsCount, *args):
         await ctx.send(f'Теги %s были добавлены в фильтр' % ', '.join(args))
         logging.info('Successfully added the tags %s to filter' % ', '.join(args))
 
-
-bot.run(config.config['botToken'])
+token = input('To confirm you identity, you must enter the token\n>>>')
+bot.run(token)
