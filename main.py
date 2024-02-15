@@ -275,5 +275,5 @@ async def addTagsToFilter(ctx, tagsCount, *args):
         await ctx.send(f'Теги %s были добавлены в фильтр' % ', '.join(args))
         logging.info('Successfully added the tags %s to filter' % ', '.join(args))
 
-token = input('To confirm you identity, you must enter the token\n>>>')
-bot.run(token)
+##token = input('To confirm you identity, you must enter the token\n>>>')
+bot.run(config.config['botToken'])
