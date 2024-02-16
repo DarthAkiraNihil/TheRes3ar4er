@@ -12,6 +12,6 @@ jobs:
       - name: Update repo
         uses: actions/checkout@v3
       - name: Build docker container
-        run: docker build -t TheRes3ar4er .
+        run: docker build -t the-res3ar4er .
       - name: Start the bot
-        run: docker run --name the-r34er --restart always -d TheRes3ar4er
+        run: docker run --name the-r34er --restart always -d the-res3ar4er
