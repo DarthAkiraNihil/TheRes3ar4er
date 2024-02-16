@@ -1,0 +1,17 @@
+name: Deploy to the Abyss
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Update repo
+        uses: actions/checkout@v3
+      - name: Build docker container
+        run: docker build -t TheRes3ar4er .
+      - name: Start the bot
+        run: docker run --name the-r34er --restart always -d TheRes3ar4er
