@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Update repo
         uses: actions/checkout@v3
-      - name: Stop the bot
-        run: docker stop the-r34er
       - name: Build docker container
         run: docker build -t the-res3ar4er .
       - name: Start the bot
