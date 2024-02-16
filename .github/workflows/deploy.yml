@@ -14,7 +14,7 @@ jobs:
       - name: Stop all containers
         run: docker stop $(docker ps -a -q)
       - name: Clean all docker data
-        run: docker system prune -a
+        run: docker system prune -af
       - name: Build docker container
         run: docker build -t the-res3ar4er .
       - name: Start the bot
