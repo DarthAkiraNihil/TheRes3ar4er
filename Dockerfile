@@ -8,6 +8,8 @@ COPY rule34api.py rule34api.py
 
 COPY config.py config.py
 
+RUN echo copied files
+
 RUN pip install --user -r requirements.txt
 
 CMD ["python", "main.py"]
