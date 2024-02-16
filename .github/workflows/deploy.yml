@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: Update repo
         uses: actions/checkout@v3
+      - name: Stop all containers
+        run: docker stop $(docker ps -a -q)
+      - name: Clean all docker data
+        run: docker system prune -a
       - name: Build docker container
         run: docker build -t the-res3ar4er .
       - name: Start the bot
