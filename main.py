@@ -3,6 +3,7 @@ import time
 import logging
 import rule34api
 import config
+import datetime
 
 from discord.ext import commands, tasks
 
@@ -18,12 +19,12 @@ logging.basicConfig(level=logging.INFO, filename='botLog.log', format="[%(asctim
 class TheRes3ar4er(commands.Bot):
     test = 0
 
-    @tasks.loop(seconds=10)
+    @tasks.loop(minutes=1)
     async def daily_dose(self):
         # time.sleep(20)
         await self.wait_until_ready()
         await self.change_presence(status=discord.Status.idle, activity=discord.Activity(
-            name="TEST", type=discord.ActivityType.playing))
+            name=f"TEST MODE {datetime.datetime.now().strftime('%H:%M')}", type=discord.ActivityType.playing))
         self.test += 1
         print('Called')
 
