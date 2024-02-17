@@ -18,4 +18,4 @@ jobs:
       - name: Build docker container
         run: docker build -t the-res3ar4er .
       - name: Start the bot
-        run: docker run --name the-r34er --restart always -d -e THE_R34ER_TOKEN=${{ secrets.THE_R34ER_TOKEN }} the-res3ar4er
+        run: docker run --name the-r34er --restart always -d -e THE_R34ER_TOKEN=${{ secrets.THE_R34ER_TOKEN }} -e DOSE_CHANNEL=${{ secrets.DOSE_CHANNEL }} the-res3ar4er

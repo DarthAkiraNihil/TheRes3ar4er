@@ -23,13 +23,25 @@ class TheRes3ar4er(commands.Bot):
     async def daily_dose(self):
         # time.sleep(20)
         await self.wait_until_ready()
-        await self.change_presence(status=discord.Status.idle, activity=discord.Activity(
+        await self.change_presence(status=discord.Status.online, activity=discord.Activity(
             name=f"TEST MODE {datetime.datetime.now().strftime('%H:%M')}", type=discord.ActivityType.playing))
         self.test += 1
         print('Called')
 
+    @tasks.loop(hours=1)
+    async def dose_test(self):
+        await self.wait_until_ready()
+        chan = self.get_channel(config.config['doseChan'])
+        await chan.send("Вот вам часовая доза (ТЕСТОВЫЙ РЕЖИМ)")
+        recentPosts = rule34api.getRecent(10, activeLimit)
+        for recentPost in recentPosts:
+            await chan.send(recentPost)
+            time.sleep(config.config['delay'])
+        await chan.send('Вывод закончен')
+
     async def setup_hook(self):
         self.daily_dose.start()
+        self.dose_test.start()
 
 
 bot = TheRes3ar4er(command_prefix=config.config['prefix'], intents=discord.Intents.all())
@@ -82,6 +94,7 @@ async def viewTagged(ctx, amount):
 
 @bot.command(name='view-tags')
 async def viewTags(ctx):
+
     # print(amount)
 
     if ctx.author != bot.user:
