@@ -31,7 +31,7 @@ class TheRes3ar4er(commands.Bot):
     @tasks.loop(hours=1)
     async def dose_test(self):
         await self.wait_until_ready()
-        chan = self.get_channel(config.config['doseChan'])
+        chan = self.get_channel(int(config.config['doseChan']))
         await chan.send("Вот вам часовая доза (ТЕСТОВЫЙ РЕЖИМ)")
         recentPosts = rule34api.getRecent(10, activeLimit)
         for recentPost in recentPosts:
