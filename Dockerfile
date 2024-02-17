@@ -1,15 +1,14 @@
 FROM python:3.10.13-slim-bullseye
 
 COPY requirements.txt requirements.txt
-
-COPY main.py main.py
-
-COPY rule34api.py rule34api.py
-
+COPY bot.py bot.py
+COPY r34API.py r34API.py
+COPY logDumper.py logDumper.py
+COPY messages.py messages.py
 COPY config.py config.py
+COPY activityList.py activityList.py
 
-RUN echo copied files
-
+RUN echo Files have been copied
 RUN pip install --user -r requirements.txt
 
-CMD ["python", "main.py"]
+CMD ["python", "bot.py"]
